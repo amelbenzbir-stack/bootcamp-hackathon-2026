@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial IoT Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .sensor-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        
+        .sensor-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        #api-status {
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 Industrial IoT Dashboard</h1>
+            <p>Bootcamp 5.0 - Hackathon Template</p>
+            <span class="status" id="connection-status">● Connected</span>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h2>🌡️ Temperature</h2>
+                <div class="sensor-value" id="temperature">--</div>
+                <div class="sensor-label">Celsius</div>
+                <button onclick="fetchSensorData()">Update Data</button>
+            </div>
+            
+            <div class="card">
+                <h2>💧 Humidity</h2>
+                <div class="sensor-value" id="humidity">--</div>
+                <div class="sensor-label">Percent</div>
+            </div>
+            
+            <div class="card">
+                <h2>⚡ Power</h2>
+                <div class="sensor-value" id="power">--</div>
+                <div class="sensor-label">kWh</div>
+            </div>
+            
+            <div class="card">
+                <h2>🔧 API Status</h2>
+                <button onclick="testAPI()">Test API Connection</button>
+                <div id="api-status">Click button to test...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        
+        // Fonction pour tester la connexion API
+        async function testAPI() {
+            const statusDiv = document.getElementById('api-status');
+            const connectionStatus = document.getElementById('connection-status');
+            
+            try {
+                statusDiv.textContent = 'Testing connection...';
+                
+                const response = await fetch(`${API_URL}/api/health`);
+                const data = await response.json();
+                
+                statusDiv.textContent = JSON.stringify(data, null, 2);
+                connectionStatus.textContent = '● Connected';
+                connectionStatus.style.background = '#10b981';
+                
+            } catch (error) {
+                statusDiv.textContent = `Error: ${error.message}`;
+                connectionStatus.textContent = '● Disconnected';
+                connectionStatus.style.background = '#ef4444';
+            }
+        }
+        
+        // Simuler des données de capteurs
+        function fetchSensorData() {
+            document.getElementById('temperature').textContent = 
+                (20 + Math.random() * 10).toFixed(1);
+            document.getElementById('humidity').textContent = 
+                (40 + Math.random() * 30).toFixed(1);
+            document.getElementById('power').textContent = 
+                (100 + Math.random() * 50).toFixed(1);
+        }
+        
+        // Actualiser les données toutes les 5 secondes
+        setInterval(fetchSensorData, 5000);
+        
+        // Charger les données initiales
+        fetchSensorData();
+    </script>
+</body>
+</html>
